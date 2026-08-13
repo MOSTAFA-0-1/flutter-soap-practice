@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://example.com/patient"
+    targetNamespace="http://example.com/patient">
+    
+    <!-- ============================================ -->
+    <!-- 1. DATA TYPES (XML Schema)                   -->
+    <!-- ============================================ -->
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://example.com/patient">
+            
+            <!-- Patient record structure -->
+            <xsd:complexType name="Patient">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:string"/>
+                    <xsd:element name="firstName" type="xsd:string"/>
+                    <xsd:element name="lastName" type="xsd:string"/>
+                    <xsd:element name="dateOfBirth" type="xsd:date"/>
+                    <xsd:element name="gender" type="xsd:string"/>
+                    <xsd:element name="bloodType" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- Medical condition structure -->
+            <xsd:complexType name="Condition">
+                <xsd:sequence>
+                    <xsd:element name="conditionId" type="xsd:string"/>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="diagnosedDate" type="xsd:date"/>
+                    <xsd:element name="status" type="xsd:string"/> <!-- Active, Resolved, Chronic -->
+                    <xsd:element name="notes" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- Medication structure -->
+            <xsd:complexType name="Medication">
+                <xsd:sequence>
+                    <xsd:element name="medicationId" type="xsd:string"/>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="dosage" type="xsd:string"/>
+                    <xsd:element name="frequency" type="xsd:string"/>
+                    <xsd:element name="startDate" type="xsd:date"/>
+                    <xsd:element name="endDate" type="xsd:date" minOccurs="0"/>
+                    <xsd:element name="prescribingDoctor" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- Full patient history (response) -->
+            <xsd:complexType name="PatientHistory">
+                <xsd:sequence>
+                    <xsd:element name="patient" type="tns:Patient"/>
+                    <xsd:element name="conditions" type="tns:Condition" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="medications" type="tns:Medication" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="allergies" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- ===== Request/Response Wrappers ===== -->
+            
+            <!-- Get Patient History -->
+            <xsd:element name="GetPatientHistoryRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="patientId" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="GetPatientHistoryResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="history" type="tns:PatientHistory"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Add Medical Condition -->
+            <xsd:element name="AddConditionRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="patientId" type="xsd:string"/>
+                        <xsd:element name="condition" type="tns:Condition"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="AddConditionResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="success" type="xsd:boolean"/>
+                        <xsd:element name="message" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Update Medication -->
+            <xsd:element name="UpdateMedicationRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="patientId" type="xsd:string"/>
+                        <xsd:element name="medication" type="tns:Medication"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="UpdateMedicationResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="success" type="xsd:boolean"/>
+                        <xsd:element name="message" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Search Patients -->
+            <xsd:element name="SearchPatientsRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="searchTerm" type="xsd:string"/>
+                        <xsd:element name="maxResults" type="xsd:int" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="SearchPatientsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="patients" type="tns:Patient" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+        </xsd:schema>
+    </wsdl:types>
+    
+    <!-- ============================================ -->
+    <!-- 2. MESSAGES (Define input/output)            -->
+    <!-- ============================================ -->
+    
+    <!-- Get Patient History -->
+    <wsdl:message name="GetPatientHistoryRequest">
+        <wsdl:part name="parameters" element="tns:GetPatientHistoryRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetPatientHistoryResponse">
+        <wsdl:part name="parameters" element="tns:GetPatientHistoryResponse"/>
+    </wsdl:message>
+    
+    <!-- Add Condition -->
+    <wsdl:message name="AddConditionRequest">
+        <wsdl:part name="parameters" element="tns:AddConditionRequest"/>
+    </wsdl:message>
+    <wsdl:message name="AddConditionResponse">
+        <wsdl:part name="parameters" element="tns:AddConditionResponse"/>
+    </wsdl:message>
+    
+    <!-- Update Medication -->
+    <wsdl:message name="UpdateMedicationRequest">
+        <wsdl:part name="parameters" element="tns:UpdateMedicationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateMedicationResponse">
+        <wsdl:part name="parameters" element="tns:UpdateMedicationResponse"/>
+    </wsdl:message>
+    
+    <!-- Search Patients -->
+    <wsdl:message name="SearchPatientsRequest">
+        <wsdl:part name="parameters" element="tns:SearchPatientsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="SearchPatientsResponse">
+        <wsdl:part name="parameters" element="tns:SearchPatientsResponse"/>
+    </wsdl:message>
+    
+    <!-- ============================================ -->
+    <!-- 3. PORT TYPE (Define operations)             -->
+    <!-- ============================================ -->
+    <wsdl:portType name="PatientHistoryPortType">
+        
+        <wsdl:operation name="GetPatientHistory">
+            <wsdl:input message="tns:GetPatientHistoryRequest"/>
+            <wsdl:output message="tns:GetPatientHistoryResponse"/>
+        </wsdl:operation>
+        
+        <wsdl:operation name="AddCondition">
+            <wsdl:input message="tns:AddConditionRequest"/>
+            <wsdl:output message="tns:AddConditionResponse"/>
+        </wsdl:operation>
+        
+        <wsdl:operation name="UpdateMedication">
+            <wsdl:input message="tns:UpdateMedicationRequest"/>
+            <wsdl:output message="tns:UpdateMedicationResponse"/>
+        </wsdl:operation>
+        
+        <wsdl:operation name="SearchPatients">
+            <wsdl:input message="tns:SearchPatientsRequest"/>
+            <wsdl:output message="tns:SearchPatientsResponse"/>
+        </wsdl:operation>
+        
+    </wsdl:portType>
+    
+    <!-- ============================================ -->
+    <!-- 4. BINDING (SOAP over HTTP)                 -->
+    <!-- ============================================ -->
+    <wsdl:binding name="PatientHistorySoapBinding" type="tns:PatientHistoryPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <wsdl:operation name="GetPatientHistory">
+            <soap:operation soapAction="http://example.com/patient/GetPatientHistory"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="AddCondition">
+            <soap:operation soapAction="http://example.com/patient/AddCondition"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="UpdateMedication">
+            <soap:operation soapAction="http://example.com/patient/UpdateMedication"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="SearchPatients">
+            <soap:operation soapAction="http://example.com/patient/SearchPatients"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        
+    </wsdl:binding>
+    
+    <!-- ============================================ -->
+    <!-- 5. SERVICE (The actual endpoint)             -->
+    <!-- ============================================ -->
+    <wsdl:service name="PatientHistoryService">
+        <wsdl:port name="PatientHistoryPort" binding="tns:PatientHistorySoapBinding">
+            <soap:address location="http://localhost:8080/patient-history"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+</wsdl:definitions>

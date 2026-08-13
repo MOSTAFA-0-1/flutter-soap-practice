@@ -1,0 +1,11 @@
+file arcticture 
+feature based arcticture
+lib/
+   -core
+   -features
+   -main.dart
+2 layers for each feature
+data layer => repo , model , resources 
+ui layer => widgets , screens , controllers 
+
+alwyes divide the code into smaller seprated files 

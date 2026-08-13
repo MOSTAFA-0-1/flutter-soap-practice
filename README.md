@@ -56,7 +56,7 @@ A typical SOAP HTTP call looks like this:
 REST is usually the better default for new mobile APIs. SOAP is still common where hospitals, banks, and governments already expose a WSDL and will not rewrite it.
 
 ```mermaid
-Flowchart LR
+flowchart LR
     %% User Request Flow (Downwards/Right)
     Screen[Flutter Screen] -->|"User Action / Event"| Controller[Controller / State Manager]
     Controller -->|"Fetch Request"| Repository

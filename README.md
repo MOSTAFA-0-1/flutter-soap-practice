@@ -56,15 +56,20 @@ A typical SOAP HTTP call looks like this:
 REST is usually the better default for new mobile APIs. SOAP is still common where hospitals, banks, and governments already expose a WSDL and will not rewrite it.
 
 ```mermaid
-flowchart LR
-  Screen[Flutter screen] --> Controller
-  Controller --> Repository
-  Repository --> Resource[SOAP resource]
-  Resource --> ApiHelper
-  ApiHelper -->|"POST XML envelope"| Beeceptor
-  Beeceptor -->|"XML response"| ApiHelper
-  ApiHelper --> Models[Dart models]
-  Models --> Screen
+Flowchart LR
+    %% User Request Flow (Downwards/Right)
+    Screen[Flutter Screen] -->|"User Action / Event"| Controller[Controller / State Manager]
+    Controller -->|"Fetch Request"| Repository
+    Repository -->|"Fetch Data"| DataSource[SOAP Data Source / Resource]
+    DataSource -->|"Construct XML"| ApiHelper
+    ApiHelper -->|"POST XML Envelope"| Beeceptor[Beeceptor / SOAP API]
+
+    %% Response Flow (Upwards/Left)
+    Beeceptor -->|"XML Response"| ApiHelper
+    ApiHelper -->|"Parse XML to Models"| Models[Dart Models]
+    Models -->|"Return Models / Entities"| Repository
+    Repository -->|"Return Domain Models / State"| Controller
+    Controller -->|"Emit UI State"| Screen
 ```
 
 ---
